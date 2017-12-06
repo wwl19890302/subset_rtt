@@ -255,8 +255,29 @@ static void GPIO_Configuration(void)
 }
 
 /* RT-Thread device interface */
-static rt_err_t nrf24l01_init(rt_device_t dev)
+static rt_err_t nrf24l01_init(spi_nrf24l01 spi_nrf24l01, const char * spi_device_name)
 {
+    struct rt_spi_device * rt_spi_device;
+    /* initialize mutex */
+    if(rt_mutex_int(&spi_nrf24l01.lock, spi_device_name, RT_IPC_FLAG_FIFO) != RT_EOK)
+    {
+        rt_kprintf("init nrf24l01 lock mutex failed\n");
+        return -RT_ENOSYS;
+    }
+
+    rt_spi_device = (struct rt_spi_device*)rt_device_find(spi_device_name);
+    if(rt_spi_device == RT_NULL)
+    {
+        rt_kprintf("spi device %s not found!\r\n",spi_device_name);
+        return -RT_ENOSYS;
+    }
+    spi_nrf24l01.rt_spi_device = rt_spi_device;
+
+    /* config spi */
+    {
+        struct rt_spi_configuration cfg;
+        sfg.data_width = 8;
+    }
     return RT_EOK;
 }
 
