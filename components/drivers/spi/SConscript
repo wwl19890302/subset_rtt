@@ -33,9 +33,6 @@ if GetDepend('RT_USING_SFUD'):
     if GetDepend('RT_SFUD_USING_SFDP'):
         src_device += ['sfud/src/sfud_sfdp.c']
 
-if GetDepend('RT_USING_NRF24L01'):
-    src_device += ['spi_nrf24l01.c']
-
 src += src_device
 
 group = DefineGroup('DeviceDrivers', src, depend = ['RT_USING_SPI'], CPPPATH = CPPPATH)

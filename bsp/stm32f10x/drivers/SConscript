@@ -43,6 +43,11 @@ if GetDepend('RT_USING_RTGUI'):
 if GetDepend('RT_USING_WDT'):
     src += ['stm32f1_wdg.c']
 
+# add nrf24l01 drivers.
+if GetDepend('RT_USING_NRF24L01'):
+    src += ['nrf24l01.c']
+
+
     
 CPPPATH = [cwd]
 
