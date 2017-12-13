@@ -50,3 +50,4 @@
 .\build\nrf24l01.o: ..\..\include\rtservice.h
 .\build\nrf24l01.o: ..\..\include\rtm.h
 .\build\nrf24l01.o: ..\..\include\rtthread.h
+.\build\nrf24l01.o: drivers\relay.h

@@ -51,3 +51,6 @@
 .\build\application.o: ..\..\include\rtthread.h
 .\build\application.o: drivers\led.h
 .\build\application.o: drivers\nrf24l01.h
+.\build\application.o: drivers\relay.h
+.\build\application.o: drivers\key.h
+.\build\application.o: D:\Keil\ARM\ARMCC\bin\..\include\stdio.h

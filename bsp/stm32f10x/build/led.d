@@ -48,8 +48,3 @@
 .\build\led.o: Libraries\STM32F10x_StdPeriph_Driver\inc\stm32f10x_usart.h
 .\build\led.o: Libraries\STM32F10x_StdPeriph_Driver\inc\stm32f10x_wwdg.h
 .\build\led.o: Libraries\STM32F10x_StdPeriph_Driver\inc\misc.h
-.\build\led.o: ..\..\components\finsh\finsh.h
-.\build\led.o: D:\Keil\ARM\ARMCC\bin\..\include\stdio.h
-.\build\led.o: D:\Keil\ARM\ARMCC\bin\..\include\ctype.h
-.\build\led.o: D:\Keil\ARM\ARMCC\bin\..\include\stdlib.h
-.\build\led.o: D:\Keil\ARM\ARMCC\bin\..\include\string.h

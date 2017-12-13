@@ -47,7 +47,13 @@ if GetDepend('RT_USING_WDT'):
 if GetDepend('RT_USING_NRF24L01'):
     src += ['nrf24l01.c']
 
+# add key drivers.
+if GetDepend('RT_USING_KEY'):
+    src += ['key.c']
 
+# add relay drivers.
+if GetDepend('RT_USING_RELAY'):
+    src += ['relay.c']
     
 CPPPATH = [cwd]
 

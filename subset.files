@@ -3129,3 +3129,9 @@ README.md
 README_zh.md
 bsp/stm32f10x/drivers/nrf24l01.c
 bsp/stm32f10x/drivers/nrf24l01.h
+bsp/stm32f10x/applications/key.c
+bsp/stm32f10x/applications/key.h
+bsp/stm32f10x/drivers/key.c
+bsp/stm32f10x/drivers/key.h
+bsp/stm32f10x/drivers/relay.c
+bsp/stm32f10x/drivers/relay.h

@@ -19,8 +19,3 @@
 .\build\mem.o: ..\..\include\rtservice.h
 .\build\mem.o: ..\..\include\rtm.h
 .\build\mem.o: ..\..\include\rtthread.h
-.\build\mem.o: ..\..\components\finsh\finsh.h
-.\build\mem.o: D:\Keil\ARM\ARMCC\bin\..\include\stdio.h
-.\build\mem.o: D:\Keil\ARM\ARMCC\bin\..\include\ctype.h
-.\build\mem.o: D:\Keil\ARM\ARMCC\bin\..\include\stdlib.h
-.\build\mem.o: D:\Keil\ARM\ARMCC\bin\..\include\string.h

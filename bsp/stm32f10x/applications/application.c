@@ -38,6 +38,8 @@
 
 #include "led.h"
 #include "nrf24l01.h"
+#include "relay.h"
+#include "key.h"
 
 #ifdef RT_USING_RTGUI
 rt_bool_t cali_setup(void)
@@ -63,8 +65,12 @@ void rt_init_thread_entry(void* parameter)
     rt_components_init();
 #endif
 
-    rt_led_init();
-    rt_nrf24l01_init();
+// 	rt_kprintf("1");
+      rt_led_init();
+// 	rt_kprintf("2");
+//     rt_nrf24l01_init();
+//     relay_init();
+//     key_init();
 
     /* Filesystem Initialization */
 #if defined(RT_USING_DFS) && defined(RT_USING_DFS_ELMFAT)
@@ -112,6 +118,10 @@ int rt_application_init(void)
 {
     rt_thread_t init_thread;
 
+//	rt_led_init();
+
+	GPIO_ResetBits(GPIOC, GPIO_Pin_13);
+	
 #if (RT_THREAD_PRIORITY_MAX == 32)
     init_thread = rt_thread_create("init",
                                    rt_init_thread_entry, RT_NULL,

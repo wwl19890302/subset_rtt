@@ -239,12 +239,17 @@ void NRF24L01_TX_Mode(void)
     NRF24L01_CE=1;//CE为高,10us后启动发送
 }
 
+#include "relay.h"
+
 ALIGN(RT_ALIGN_SIZE)
 static rt_uint8_t nrf24l01_stack[ 512 ];
 static struct rt_thread nrf24l01_thread;
 static void nrf24l01_thread_entry(void* parameter)
 {
     rt_uint8_t tmp_buf[32];
+    /* 身份码    灯开关   热水器   电视  窗帘  空调  音乐  安防  插座
+    **  4B         9B       1B       1B    1B   5B     3B   5B     3B*/
+    //this subset is subset1(tmp_buf[0~3]:0x0001) which contain led2(tmp_buf[5]) led3(tmp_buf[6])
 	rt_uint8_t	state;
 	
     NRF24L01_Init();
@@ -254,10 +259,28 @@ static void nrf24l01_thread_entry(void* parameter)
     {
         if(NRF24L01_RxPacket(tmp_buf)==0)//一旦接收到信息,则显示出来.
         {
-//					tmp_buf[32]=0;//加入字符串结束符
             rt_kprintf("%s\r\n",tmp_buf);   //打印接收到的字符
+            if(tmp_buf[5])  //set relay0
+            {
+                relay_on(0);
+            }
+            else
+            {
+                relay_off(0);
+            }
+            if(tmp_buf[6])  //set relay1
+            {
+                relay_on(1);
+            }
+            else
+            {
+                relay_off(1);
+            }
 
             NRF24L01_TX_Mode();             //设置为发射模式
+
+            tmp_buf[3] = 1;
+
             state = NRF24L01_TxPacket(tmp_buf);//发射接收到的字符
             rt_kprintf("tx_state: %x \r\n",state);  //打印发射状态
             state = 0;

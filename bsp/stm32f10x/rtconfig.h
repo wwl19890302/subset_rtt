@@ -27,7 +27,7 @@
 /* #define RT_USING_TIMER_SOFT */
 #define RT_TIMER_THREAD_PRIO		4
 #define RT_TIMER_THREAD_STACK_SIZE	512
-#define RT_TIMER_TICK_PER_SECOND	10
+#define RT_TIMER_TICK_PER_SECOND	100
 
 /* SECTION: IPC */
 /* Using Semaphore*/
@@ -74,7 +74,7 @@
 #define RT_CONSOLE_DEVICE_NAME	    "uart1"
 
 /* SECTION: finsh, a C-Express shell */
-#define RT_USING_FINSH
+//#define RT_USING_FINSH
 /* Using symbol table */
 #define FINSH_USING_SYMTAB
 #define FINSH_USING_DESCRIPTION
@@ -83,6 +83,8 @@
 
 //#define RT_USING_SPI
 #define RT_USING_NRF24L01
+#define RT_USING_KEY
+#define RT_USING_RELAY
 
 /*
 //#define RT_USING_CAN
