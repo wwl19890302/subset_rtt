@@ -68,9 +68,9 @@ void rt_init_thread_entry(void* parameter)
 // 	rt_kprintf("1");
       rt_led_init();
 // 	rt_kprintf("2");
-//     rt_nrf24l01_init();
-//     relay_init();
-//     key_init();
+     rt_nrf24l01_init();
+     relay_init();
+     key_init();
 
     /* Filesystem Initialization */
 #if defined(RT_USING_DFS) && defined(RT_USING_DFS_ELMFAT)
