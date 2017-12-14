@@ -1,18 +1,6 @@
 #include "relay.h"
 #include "stm32f10x.h"
 
-//relay define
-#define relay0_rcc      RCC_APB2Periph_GPIOB
-#define relay0_gpio     GPIOB
-#define relay0_pin      (GPIO_Pin_5)
-
-#define relay1_rcc      RCC_APB2Periph_GPIOB
-#define relay1_gpio     GPIOB
-#define relay1_pin      (GPIO_Pin_4)
-
-#define relay2_rcc      RCC_APB2Periph_GPIOB
-#define relay2_gpio     GPIOB
-#define relay2_pin      (GPIO_Pin_3)
 
 void relay_init(void)
 {
@@ -35,6 +23,7 @@ void relay_init(void)
     GPIO_ResetBits(relay0_gpio, relay0_pin);
     GPIO_ResetBits(relay1_gpio, relay1_pin);
     GPIO_ResetBits(relay2_gpio, relay2_pin);
+
 }
 
 void relay_on(rt_int8_t index)

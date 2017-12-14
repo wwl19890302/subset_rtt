@@ -302,18 +302,16 @@ void key2_long_press(void)
 */
 void key3_short_press(void)
 {
-    static rt_uint8_t i = 0;
-    i++;
     rt_kprintf("key3 short press, relay0 change state!\r\n");
-    if(i%2 == 0)
-    {
-        relay_on(0);
-        rx_tmp_buf[5] = 1;
-    }
-    else
+    if(GPIO_ReadOutputDataBit(relay0_gpio, relay0_pin))	//当前开
     {
         relay_off(0);
         rx_tmp_buf[5] = 0;
+    }
+    else
+    {
+        relay_on(0);
+        rx_tmp_buf[5] = 1;
     }
 }
 /**
@@ -333,18 +331,16 @@ void key3_long_press(void)
 */
 void key4_short_press(void)
 {
-    static rt_uint8_t i = 0;
-    i++;
     rt_kprintf("key4 short press, relay1 change state!\r\n");
-    if(i%2 == 0)
-    {
-        relay_on(1);
-        rx_tmp_buf[6] = 1;
-    }
-    else
+    if(GPIO_ReadOutputDataBit(relay1_gpio, relay1_pin))	//当前开
     {
         relay_off(1);
         rx_tmp_buf[6] = 0;
+    }
+    else
+    {
+        relay_on(1);
+        rx_tmp_buf[6] = 1;
     }
 }
 /**
@@ -364,16 +360,14 @@ void key4_long_press(void)
 */
 void key5_short_press(void)
 {
-    static rt_uint8_t i = 0;
-    i++;
     rt_kprintf("key5 short press, relay2 change state!\r\n");
-    if(i%2 == 0)
+	if(GPIO_ReadOutputDataBit(relay2_gpio, relay2_pin))	//当前开
     {
-        relay_on(2);
+        relay_off(2);
     }
     else
     {
-        relay_off(2);
+        relay_on(2);
     }
 }
 /**

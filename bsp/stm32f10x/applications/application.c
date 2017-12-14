@@ -67,10 +67,12 @@ void rt_init_thread_entry(void* parameter)
 
 // 	rt_kprintf("1");
       rt_led_init();
+	     key_init();
 // 	rt_kprintf("2");
      rt_nrf24l01_init();
+	
      relay_init();
-     key_init();
+
 
     /* Filesystem Initialization */
 #if defined(RT_USING_DFS) && defined(RT_USING_DFS_ELMFAT)
@@ -117,10 +119,6 @@ void rt_init_thread_entry(void* parameter)
 int rt_application_init(void)
 {
     rt_thread_t init_thread;
-
-//	rt_led_init();
-
-	GPIO_ResetBits(GPIOC, GPIO_Pin_13);
 	
 #if (RT_THREAD_PRIORITY_MAX == 32)
     init_thread = rt_thread_create("init",

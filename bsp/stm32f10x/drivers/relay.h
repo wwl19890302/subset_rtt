@@ -4,9 +4,19 @@
 #include "board.h"
 #include "rtthread.h"
 
-#define relay0  PBout(5)
-#define relay1  PBout(4)
-#define relay2  PBout(3)
+
+//relay define
+#define relay0_rcc      RCC_APB2Periph_GPIOB
+#define relay0_gpio     GPIOB
+#define relay0_pin      (GPIO_Pin_5)
+
+#define relay1_rcc      RCC_APB2Periph_GPIOB
+#define relay1_gpio     GPIOA
+#define relay1_pin      (GPIO_Pin_12)
+
+#define relay2_rcc      RCC_APB2Periph_GPIOB
+#define relay2_gpio     GPIOB
+#define relay2_pin      (GPIO_Pin_3)
 
 void relay_init(void);
 void relay_on(rt_int8_t index);
