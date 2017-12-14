@@ -254,6 +254,7 @@ void key_para_init(keys_typedef_t *keys)
 #define GPIO_KEY_NUM    5
 key_typedef_t single_key[GPIO_KEY_NUM];
 
+extern rt_uint8_t rx_tmp_buf[32];       //current rx data
 /**
 * @brief key1 short press handle
 * @param none
@@ -307,10 +308,12 @@ void key3_short_press(void)
     if(i%2 == 0)
     {
         relay_on(0);
+        rx_tmp_buf[5] = 1;
     }
     else
     {
         relay_off(0);
+        rx_tmp_buf[5] = 0;
     }
 }
 /**
@@ -336,10 +339,12 @@ void key4_short_press(void)
     if(i%2 == 0)
     {
         relay_on(1);
+        rx_tmp_buf[6] = 1;
     }
     else
     {
         relay_off(1);
+        rx_tmp_buf[6] = 0;
     }
 }
 /**

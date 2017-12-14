@@ -84,6 +84,8 @@ uint8_t NRF24L01_TxPacket(uint8_t *txbuf);//发送一个包的数据
 uint8_t NRF24L01_RxPacket(uint8_t *rxbuf);//接收一个包的数据
 static void nrf24l01_thread_entry(void* parameter);
 int rt_nrf24l01_init(void);
+static void nrf24l01_rx_data_pro(void);
+static rt_uint8_t data_change_check(void);
 
 
 #endif

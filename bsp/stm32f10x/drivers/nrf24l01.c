@@ -48,7 +48,7 @@ void NRF24L01_Init(void)
     SPI_InitStructure.SPI_CPOL = SPI_CPOL_Low;		//时钟悬空低
     SPI_InitStructure.SPI_CPHA = SPI_CPHA_1Edge;	//数据捕获于第1个时钟沿
     SPI_InitStructure.SPI_NSS = SPI_NSS_Soft;		//NSS信号由软件控制
-    SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_16;		//定义波特率预分频的值:波特率预分频值为16
+    SPI_InitStructure.SPI_BaudRatePrescaler = SPI_BaudRatePrescaler_8;		//定义波特率预分频的值:波特率预分频值为8
     SPI_InitStructure.SPI_FirstBit = SPI_FirstBit_MSB;	//数据传输从MSB位开始
     SPI_InitStructure.SPI_CRCPolynomial = 7;	//CRC值计算的多项式
     SPI_Init(SPI2, &SPI_InitStructure);  //根据SPI_InitStruct中指定的参数初始化外设SPIx寄存器
@@ -168,7 +168,7 @@ uint8_t NRF24L01_Write_Buf(uint8_t reg, uint8_t *pBuf, uint8_t len)
 uint8_t NRF24L01_TxPacket(uint8_t *txbuf)
 {
     uint8_t sta;
-    SPI2_SetSpeed(SPI_BaudRatePrescaler_8);//spi速度为9Mhz（24L01的最大SPI时钟为10Mhz）
+//    SPI2_SetSpeed(SPI_BaudRatePrescaler_8);//spi速度为9Mhz（24L01的最大SPI时钟为10Mhz）
     NRF24L01_CE=0;
     NRF24L01_Write_Buf(WR_TX_PLOAD,txbuf,TX_PLOAD_WIDTH);//写数据到TX BUF  32个字节
     NRF24L01_CE=1;//启动发送
@@ -178,6 +178,7 @@ uint8_t NRF24L01_TxPacket(uint8_t *txbuf)
     if(sta&MAX_TX)//达到最大重发次数
     {
         NRF24L01_Write_Reg(FLUSH_TX,0xff);//清除TX FIFO寄存器
+        rt_kprintf("tx_error, max_tx\r\n");
         return MAX_TX;
     }
     if(sta&TX_OK)//发送完成
@@ -192,7 +193,7 @@ uint8_t NRF24L01_TxPacket(uint8_t *txbuf)
 uint8_t NRF24L01_RxPacket(uint8_t *rxbuf)
 {
     uint8_t sta;
-    SPI2_SetSpeed(SPI_BaudRatePrescaler_8); //spi速度为9Mhz（24L01的最大SPI时钟为10Mhz）
+//    SPI2_SetSpeed(SPI_BaudRatePrescaler_8); //spi速度为9Mhz（24L01的最大SPI时钟为10Mhz）
     sta=NRF24L01_Read_Reg(STATUS);  //读取状态寄存器的值
     NRF24L01_Write_Reg(WRITE_REG_NRF+STATUS,sta); //清除TX_DS或MAX_RT中断标志
     if(sta&RX_OK)//接收到数据
@@ -241,51 +242,28 @@ void NRF24L01_TX_Mode(void)
 
 #include "relay.h"
 
+static rt_uint8_t tx_tmp_buf[32];
+ rt_uint8_t rx_tmp_buf[32];       //current rx data
+static rt_uint8_t prev_rx_tmp_buf[32];  //last rx data
+
 ALIGN(RT_ALIGN_SIZE)
 static rt_uint8_t nrf24l01_stack[ 512 ];
 static struct rt_thread nrf24l01_thread;
 static void nrf24l01_thread_entry(void* parameter)
 {
-    rt_uint8_t tmp_buf[32];
+
     /* 身份码    灯开关   热水器   电视  窗帘  空调  音乐  安防  插座
     **  4B         9B       1B       1B    1B   5B     3B   5B     3B*/
     //this subset is subset1(tmp_buf[0~3]:0x0001) which contain led2(tmp_buf[5]) led3(tmp_buf[6])
-	rt_uint8_t	state;
+
 	
     NRF24L01_Init();
     NRF24L01_RX_Mode(); //初始设置为接收模式
 
     while (1)
     {
-        if(NRF24L01_RxPacket(tmp_buf)==0)//一旦接收到信息,则显示出来.
-        {
-            rt_kprintf("%s\r\n",tmp_buf);   //打印接收到的字符
-            if(tmp_buf[5])  //set relay0
-            {
-                relay_on(0);
-            }
-            else
-            {
-                relay_off(0);
-            }
-            if(tmp_buf[6])  //set relay1
-            {
-                relay_on(1);
-            }
-            else
-            {
-                relay_off(1);
-            }
-
-            NRF24L01_TX_Mode();             //设置为发射模式
-
-            tmp_buf[3] = 1;
-
-            state = NRF24L01_TxPacket(tmp_buf);//发射接收到的字符
-            rt_kprintf("tx_state: %x \r\n",state);  //打印发射状态
-            state = 0;
-            NRF24L01_RX_Mode();         //重新设置成接收模式，继续接收数据
-        }else  rt_thread_delay( 1 );
+        nrf24l01_rx_data_pro();
+        rt_thread_delay( 5 );
     }
 }
 
@@ -308,5 +286,81 @@ int rt_nrf24l01_init(void)
     }
 	return	result;
 }
+
+static rt_uint8_t data_change_check(void)
+{
+    rt_uint8_t state = 0;
+    if(rx_tmp_buf[5] != prev_rx_tmp_buf[5]) //relay0
+    {
+        if(rx_tmp_buf[5])  //set relay0
+        {
+            relay_on(0);
+            rt_kprintf("relay0 on!\r\n");   //
+        }
+        else
+        {
+            relay_off(0);
+            rt_kprintf("relay0 off!\r\n");   //
+        }
+        state = 1;
+    }
+    if(rx_tmp_buf[6] != prev_rx_tmp_buf[6]) //relay1
+    {
+        if(rx_tmp_buf[6])  //set relay1
+        {
+            relay_on(1);
+            rt_kprintf("relay1 on!\r\n");   //
+        }
+        else
+        {
+            relay_off(1);
+            rt_kprintf("relay1 off!\r\n");   //
+        }
+        state = 1;
+    }
+    if(state)
+    {
+        state = 0;
+        //note this change to prev data
+        prev_rx_tmp_buf[5] = rx_tmp_buf[5];
+        prev_rx_tmp_buf[6] = rx_tmp_buf[6];
+
+        //note this change to tx buffer
+        tx_tmp_buf[5] = rx_tmp_buf[5];
+        tx_tmp_buf[6] = rx_tmp_buf[6];
+
+        rt_kprintf("control data changed!\r\n");   //
+        return 1;   //control data change
+    }
+    else
+    {
+//        rt_kprintf("control data not changed!\r\n");   //
+        return 0;   //control data not change
+    }
+}
+
+static void nrf24l01_rx_data_pro(void)
+{
+    rt_uint8_t	state;
+	
+	if(NRF24L01_RxPacket(rx_tmp_buf) == 0);
+//	{rt_thread_delay(2);};	//尝试接收数据
+//    rt_kprintf("%s\r\n",rx_tmp_buf);   //打印接收到的字符
+
+    state = data_change_check();
+    if(state)   //report change to home assistant
+    {
+        tx_tmp_buf[3] = 1;      //subset ID
+        NRF24L01_TX_Mode();             //设置为发射模式
+		
+        state = NRF24L01_TxPacket(tx_tmp_buf);//发射接收到的字符
+		if(state != TX_OK)	//失败重发
+		{rt_thread_delay(5);NRF24L01_TxPacket(tx_tmp_buf);}
+        rt_kprintf("tx_state: %x \r\n",state);  //打印发射状态
+        state = 0;
+        NRF24L01_RX_Mode();         //重新设置成接收模式，继续接收数据
+    }
+}
+
 
 
